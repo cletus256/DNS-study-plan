@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DNS & M365 Study Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --morning: #0ea5e9;
+    --evening: #7c3aed;
+    --weekend: #10b981;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.3);
+    background: rgba(0,212,255,0.07);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #ffffff 40%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  /* Work hours notice */
+  .work-notice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(124,58,237,0.1);
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 28px;
+    font-size: 13px;
+    animation: fadeDown 0.6s 0.1s ease both;
+  }
+
+  .work-notice .icon { font-size: 18px; }
+  .work-notice strong { color: var(--accent2); }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    animation: fadeDown 0.6s 0.15s ease both;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  /* Week tabs */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    animation: fadeDown 0.6s 0.2s ease both;
+  }
+
+  .tab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .tab:hover { border-color: var(--accent); color: var(--accent); }
+
+  .tab.active {
+    background: rgba(0,212,255,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Week header */
+  .week-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px 12px 0 0;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 1px solid rgba(0,212,255,0.15);
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .week-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .week-topic {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    padding: 3px 12px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  /* Days grid */
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+    margin-bottom: 32px;
+    animation: fadeUp 0.4s 0.05s ease both;
+  }
+
+  .day-card {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 16px;
+    transition: background 0.2s;
+  }
+
+  .day-card:hover { background: var(--surface2); }
+  .day-card:last-child { border-right: none; }
+
+  .day-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .day-name.weekend { color: var(--weekend); }
+  .day-name.weekday { color: var(--muted); }
+
+  .session {
+    border-radius: 7px;
+    padding: 9px 11px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .session:last-child { margin-bottom: 0; }
+
+  .session.morning {
+    background: rgba(14,165,233,0.08);
+    border-left: 3px solid var(--morning);
+  }
+
+  .session.evening {
+    background: rgba(124,58,237,0.08);
+    border-left: 3px solid var(--evening);
+  }
+
+  .session.weekend-session {
+    background: rgba(16,185,129,0.08);
+    border-left: 3px solid var(--weekend);
+  }
+
+  .session-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .session-time.morning { color: var(--morning); }
+  .session-time.evening { color: var(--evening); }
+  .session-time.weekend-time { color: var(--weekend); }
+
+  .session-task {
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .session-resource {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 3px;
+    font-style: italic;
+  }
+
+  .rest-badge {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--muted);
+    background: rgba(100,116,139,0.1);
+    border: 1px dashed rgba(100,116,139,0.25);
+    border-radius: 5px;
+    padding: 5px 10px;
+  }
+
+  /* Progress tracker */
+  .progress-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.4s 0.1s ease both;
+  }
+
+  .progress-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .progress-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .progress-item {
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .progress-item:hover { transform: translateY(-2px); }
+
+  .progress-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin: 0 auto 8px;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .progress-circle.done {
+    border-color: var(--accent3);
+    background: rgba(16,185,129,0.1);
+  }
+
+  .progress-label {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  /* Hidden panels */
+  .week-panel { display: none; }
+  .week-panel.active { display: block; }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Tip box */
+  .tip-box {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #fcd34d;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-top: 8px;
+    animation: fadeUp 0.4s 0.15s ease both;
+  }
+
+  @media (max-width: 600px) {
+    .progress-grid { grid-template-columns: repeat(2,1fr); }
+    .days-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Day card interaction ── */
+  .day-card {
+    cursor: pointer;
+    position: relative;
+  }
+
+  .day-card-hint {
+    font-size: 10px;
+    color: var(--muted);
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px;
+    margin-left: auto;
+  }
+
+  .day-card:hover .day-card-hint { opacity: 1; }
+
+  /* completed task strikethrough on card */
+  .session.session-done .session-task {
+    text-decoration: line-through;
+    color: var(--muted);
+    opacity: 0.6;
+  }
+
+  .session-done-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent3);
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.25);
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .day-note-preview {
+    font-size: 10px;
+    color: var(--accent4);
+    margin-top: 8px;
+    padding: 5px 8px;
+    background: rgba(245,158,11,0.07);
+    border-left: 2px solid var(--accent4);
+    border-radius: 3px;
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── Modal overlay ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.93) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-day-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .modal-week-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .modal-close {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .modal-close:hover { border-color: var(--accent); color: var(--accent); }
+
+  .modal-body { padding: 18px 20px; }
+
+  /* Session checkboxes inside modal */
+  .modal-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    margin-top: 16px;
+  }
+
+  .modal-section-title:first-child { margin-top: 0; }
+
+  .modal-session {
+    border-radius: 8px;
+    padding: 11px 13px;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .modal-session.morning { background: rgba(14,165,233,0.08); border-left: 3px solid var(--morning); }
+  .modal-session.evening { background: rgba(124,58,237,0.08); border-left: 3px solid var(--evening); }
+  .modal-session.weekend-session { background: rgba(16,185,129,0.08); border-left: 3px solid var(--weekend); }
+
+  .modal-session.checked { opacity: 0.5; }
+
+  .modal-checkbox {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    border: 2px solid var(--border);
+    background: transparent;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    transition: all 0.2s;
+  }
+
+  .modal-session.checked .modal-checkbox {
+    background: var(--accent3);
+    border-color: var(--accent3);
+  }
+
+  .modal-session-content { flex: 1; }
+
+  .modal-session-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  .modal-session-time.morning { color: var(--morning); }
+  .modal-session-time.evening { color: var(--evening); }
+  .modal-session-time.weekend-time { color: var(--weekend); }
+
+  .modal-session-task {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text);
+    transition: all 0.2s;
+  }
+
+  .modal-session.checked .modal-session-task {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+
+  .modal-session-resource {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 3px;
+  }
+
+  /* Notes textarea */
+  .modal-notes-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    margin-top: 18px;
+    display: block;
+  }
+
+  .modal-notes {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    padding: 11px 13px;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+
+  .modal-notes::placeholder { color: var(--muted); }
+  .modal-notes:focus { border-color: rgba(0,212,255,0.4); }
+
+  .modal-save-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .modal-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 8px 18px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .modal-btn.secondary { background: transparent; color: var(--muted); }
+  .modal-btn.secondary:hover { border-color: var(--muted); color: var(--text); }
+
+  .modal-btn.primary {
+    background: rgba(0,212,255,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .modal-btn.primary:hover { background: rgba(0,212,255,0.2); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="badge">📡 IT Learning Path</div>
+    <h1>DNS & Microsoft 365<br>4-Week Study Plan</h1>
+    <p class="subtitle">Structured around your remote work schedule · 11:00 AM – 9:00 PM</p>
+  </div>
+
+  <div class="work-notice">
+    <span class="icon">🕐</span>
+    <span>Your study windows: <strong>8:00 AM – 10:30 AM</strong> (morning, before work) and <strong>9:30 PM – 11:00 PM</strong> (evening, after work). Weekends have extended sessions.</span>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--morning)"></div> Morning Session (before work)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--evening)"></div> Evening Session (after work)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--weekend)"></div> Weekend Deep Dive</div>
+  </div>
+
+  <!-- 4-week progress -->
+  <div class="progress-section">
+    <div class="progress-title">// 4-Week Milestone Tracker — click to mark complete</div>
+    <div class="progress-grid">
+      <div class="progress-item" onclick="toggleWeekDone(0)">
+        <div class="progress-circle" id="w0">📡</div>
+        <div class="progress-label">Week 1<br>DNS Fundamentals</div>
+      </div>
+      <div class="progress-item" onclick="toggleWeekDone(1)">
+        <div class="progress-circle" id="w1">☁️</div>
+        <div class="progress-label">Week 2<br>M365 Domain Setup</div>
+      </div>
+      <div class="progress-item" onclick="toggleWeekDone(2)">
+        <div class="progress-circle" id="w2">🔒</div>
+        <div class="progress-label">Week 3<br>Email Security</div>
+      </div>
+      <div class="progress-item" onclick="toggleWeekDone(3)">
+        <div class="progress-circle" id="w3">🏆</div>
+        <div class="progress-label">Week 4<br>Practice & MS-900 Prep</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="showWeek(0)">Week 1 — DNS Basics</button>
+    <button class="tab" onclick="showWeek(1)">Week 2 — M365 Setup</button>
+    <button class="tab" onclick="showWeek(2)">Week 3 — Email Security</button>
+    <button class="tab" onclick="showWeek(3)">Week 4 — Practice & Cert</button>
+  </div>
+
+  <!-- WEEK 1 -->
+  <div class="week-panel active" id="panel-0">
+    <div class="week-header">
+      <div class="week-title">🌐 Week 1 — DNS Fundamentals</div>
+      <div class="week-topic">FOUNDATION</div>
+    </div>
+    <div class="days-grid">
+
+      <div class="day-card">
+        <div class="day-name weekday">MON</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">What is DNS? How domain resolution works (A, CNAME, MX, TXT records overview)</div>
+          <div class="session-resource">📺 NetworkChuck – "DNS Explained" on YouTube</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Review notes. Practice: use <code>nslookup</code> on your PC to look up 3 domains</div>
+          <div class="session-resource">💻 Windows Command Prompt / Terminal</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">TUE</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">Deep dive: MX records, CNAME, and how TTL affects propagation</div>
+          <div class="session-resource">📖 Microsoft Learn – DNS on Windows Server module</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Practice with MXToolbox — test real domain MX, A, and TXT records</div>
+          <div class="session-resource">🔧 mxtoolbox.com</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">WED</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">DNS zones: forward vs reverse lookup. Primary vs secondary zones</div>
+          <div class="session-resource">📖 Microsoft Learn – Configure DNS zones</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Review and quiz yourself on record types. Write flashcard notes</div>
+          <div class="session-resource">✍️ Self-review session</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">THU</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">DNS propagation, caching, and how to diagnose slow updates</div>
+          <div class="session-resource">🌐 dnschecker.org walkthrough</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Practice: use <code>dig</code> and <code>nslookup</code> to trace DNS lookups for 5 websites</div>
+          <div class="session-resource">💻 CLI practice</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">FRI</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">SRV records and DNSSEC basics — what they protect against</div>
+          <div class="session-resource">📖 Coursera DNS course (audit free)</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Week 1 review: summarize everything learned in your own notes</div>
+          <div class="session-resource">✍️ Personal notes</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekend">SAT</div>
+        <div class="session weekend-session">
+          <div class="session-time weekend-time">🌿 8:00 AM – 12:00 PM</div>
+          <div class="session-task"><strong>Deep Dive:</strong> Install Windows Server (eval) in a VM. Set up the DNS Server role. Create a forward lookup zone and test it</div>
+          <div class="session-resource">🖥️ VirtualBox + Windows Server 2022 Eval (free)</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekend">SUN</div>
+        <div class="session weekend-session">
+          <div class="session-time weekend-time">🌿 Flexible timing</div>
+          <div class="session-task">Rest or light review. Watch 1 recap video at your own pace</div>
+        </div>
+        <div class="rest-badge">🔋 Recovery day — don't skip rest!</div>
+      </div>
+
+    </div>
+    <div class="tip-box">💡 <span><strong>Week 1 Goal:</strong> Be able to explain what each DNS record type does and use CLI tools to look up records for any domain.</span></div>
+  </div>
+
+  <!-- WEEK 2 -->
+  <div class="week-panel" id="panel-1">
+    <div class="week-header">
+      <div class="week-title">☁️ Week 2 — Microsoft 365 Domain Setup</div>
+      <div class="week-topic">CORE SKILL</div>
+    </div>
+    <div class="days-grid">
+
+      <div class="day-card">
+        <div class="day-name weekday">MON</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">Overview of Microsoft 365 Admin Center. Sign up for the free M365 Developer Sandbox</div>
+          <div class="session-resource">🔧 developer.microsoft.com/microsoft-365/dev-program</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Explore the Admin Center. Find the Domains section and read through options</div>
+          <div class="session-resource">☁️ admin.microsoft.com (sandbox)</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">TUE</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">Learn the domain verification process: TXT record method step-by-step</div>
+          <div class="session-resource">📖 Microsoft Learn – Add a domain to M365</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Watch walkthrough video: adding a custom domain in the M365 Admin Center</div>
+          <div class="session-resource">📺 John Savill or Andy Malone – YouTube</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">WED</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">Learn MX record setup for Exchange Online. Understand mail flow routing</div>
+          <div class="session-resource">📖 Microsoft Docs – MX records for M365</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Practice: try adding a domain in your sandbox. Note any errors and troubleshoot</div>
+          <div class="session-resource">🔧 M365 Developer Sandbox</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">THU</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">CNAME records for Autodiscover and Teams (lyncdiscover, sip). Why they matter</div>
+          <div class="session-resource">📖 Microsoft Learn – CNAME records for M365 services</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Use MXToolbox to verify Autodiscover and MX for a known M365 domain</div>
+          <div class="session-resource">🔧 mxtoolbox.com</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">FRI</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">Setting default domains, adding users, and assigning licenses in M365</div>
+          <div class="session-resource">📖 Microsoft Learn – Manage users</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Week 2 review. Write a step-by-step "cheat sheet" for adding a domain to M365</div>
+          <div class="session-resource">✍️ Your personal cheat sheet</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekend">SAT</div>
+        <div class="session weekend-session">
+          <div class="session-time weekend-time">🌿 8:00 AM – 12:00 PM</div>
+          <div class="session-task"><strong>Hands-on Lab:</strong> Walk through the full domain addition process in your sandbox end to end. Add DNS records manually. Verify the domain. Assign a user</div>
+          <div class="session-resource">🔧 M365 Dev Sandbox + free domain from freenom.com or similar</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekend">SUN</div>
+        <div class="session weekend-session">
+          <div class="session-time weekend-time">🌿 Flexible timing</div>
+          <div class="session-task">Watch the "Microsoft 365 Fundamentals" free course intro modules</div>
+          <div class="session-resource">🎓 academy.office365atwork.com</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="tip-box">💡 <span><strong>Week 2 Goal:</strong> Be able to walk through the entire domain setup process in M365 — from verification to fully working email routing — without referring to notes.</span></div>
+  </div>
+
+  <!-- WEEK 3 -->
+  <div class="week-panel" id="panel-2">
+    <div class="week-header">
+      <div class="week-title">🔒 Week 3 — Email Security (SPF, DKIM, DMARC)</div>
+      <div class="week-topic">SECURITY LAYER</div>
+    </div>
+    <div class="days-grid">
+
+      <div class="day-card">
+        <div class="day-name weekday">MON</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">What is SPF? How it prevents email spoofing. Anatomy of an SPF TXT record</div>
+          <div class="session-resource">📖 Microsoft Learn – Set up SPF for M365</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Test SPF records of 5 companies using MXToolbox SPF checker</div>
+          <div class="session-resource">🔧 mxtoolbox.com/spf.aspx</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">TUE</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">What is DKIM? How Microsoft 365 signs outbound emails automatically. Enabling DKIM in M365</div>
+          <div class="session-resource">📖 Microsoft Learn – Enable DKIM for M365</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Enable DKIM in your sandbox. Verify CNAME records are created correctly</div>
+          <div class="session-resource">🔧 M365 sandbox + MXToolbox DKIM checker</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">WED</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">What is DMARC? How it ties SPF + DKIM together. DMARC policies (none, quarantine, reject)</div>
+          <div class="session-resource">📺 YouTube – "DMARC explained" (any reputable IT channel)</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Create a DMARC TXT record for your sandbox domain. Validate it with MXToolbox</div>
+          <div class="session-resource">🔧 mxtoolbox.com/dmarc.aspx</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">THU</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">Troubleshooting email delivery issues — reading email headers, bounce messages, and SPF failures</div>
+          <div class="session-resource">📖 Microsoft Learn – Troubleshoot email delivery</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Use the Microsoft Remote Connectivity Analyzer to test your sandbox email flow</div>
+          <div class="session-resource">🔧 testconnectivity.microsoft.com</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">FRI</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">Anti-spam policies, safe senders, and mail flow rules in Exchange Online</div>
+          <div class="session-resource">📖 Microsoft Learn – Anti-spam policies</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Week 3 review: document SPF + DKIM + DMARC setup as a runbook/SOP</div>
+          <div class="session-resource">✍️ Write your own SOP document</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekend">SAT</div>
+        <div class="session weekend-session">
+          <div class="session-time weekend-time">🌿 8:00 AM – 12:00 PM</div>
+          <div class="session-task"><strong>Security Lab:</strong> Configure complete SPF + DKIM + DMARC for your sandbox. Test email deliverability. Use mail-tester.com to score your configuration</div>
+          <div class="session-resource">🔧 mail-tester.com (free) + M365 sandbox</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekend">SUN</div>
+        <div class="session weekend-session">
+          <div class="session-time weekend-time">🌿 Flexible timing</div>
+          <div class="session-task">Catch up on any missed topics from Week 3. Light review only</div>
+        </div>
+        <div class="rest-badge">🔋 Light day — prepare for final week!</div>
+      </div>
+
+    </div>
+    <div class="tip-box">💡 <span><strong>Week 3 Goal:</strong> Be able to configure and verify SPF, DKIM, and DMARC for any M365 domain from scratch, and explain what each one does to a non-technical person.</span></div>
+  </div>
+
+  <!-- WEEK 4 -->
+  <div class="week-panel" id="panel-3">
+    <div class="week-header">
+      <div class="week-title">🏆 Week 4 — Practice, Polish & MS-900 Prep</div>
+      <div class="week-topic">CAPSTONE</div>
+    </div>
+    <div class="days-grid">
+
+      <div class="day-card">
+        <div class="day-name weekday">MON</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">Start MS-900 free learning path. Module 1: Introduction to Microsoft 365</div>
+          <div class="session-resource">🎓 learn.microsoft.com – MS-900 path</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Flashcard review of all DNS record types and their M365 use cases</div>
+          <div class="session-resource">✍️ Self-review</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">TUE</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">MS-900 Module 2: Microsoft 365 productivity and teamwork solutions</div>
+          <div class="session-resource">🎓 Microsoft Learn – MS-900</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Simulate a full domain migration scenario: document each step from start to finish</div>
+          <div class="session-resource">✍️ Scenario practice exercise</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">WED</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">MS-900 Module 3: Security, compliance, and trust in Microsoft 365</div>
+          <div class="session-resource">🎓 Microsoft Learn – MS-900</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Take the Class Central DNS quiz / practice questions. Review weak spots</div>
+          <div class="session-resource">🎓 classcentral.com DNS resources</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">THU</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">MS-900 Module 4: Microsoft 365 pricing, licensing, and support</div>
+          <div class="session-resource">🎓 Microsoft Learn – MS-900</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">Do the official MS-900 practice assessment. Review every wrong answer</div>
+          <div class="session-resource">🎓 learn.microsoft.com – MS-900 practice assessment</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekday">FRI</div>
+        <div class="session morning">
+          <div class="session-time morning">⏰ 8:00 – 10:30 AM</div>
+          <div class="session-task">Full mock scenario: pretend a client needs M365 set up from scratch. Plan everything from DNS to DMARC on paper</div>
+          <div class="session-resource">✍️ End-to-end scenario exercise</div>
+        </div>
+        <div class="session evening">
+          <div class="session-time evening">🌙 9:30 – 11:00 PM</div>
+          <div class="session-task">🎉 Celebrate! Review your notes. Sign up for the office365atwork.com free certificate</div>
+          <div class="session-resource">🎓 academy.office365atwork.com</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekend">SAT</div>
+        <div class="session weekend-session">
+          <div class="session-time weekend-time">🌿 8:00 AM – 1:00 PM</div>
+          <div class="session-task"><strong>Final Lab:</strong> Build a complete environment from zero — add domain, configure all DNS records, set up SPF/DKIM/DMARC, create users. Time yourself. Aim to do it in under 45 minutes</div>
+          <div class="session-resource">🔧 M365 Dev Sandbox — full run-through</div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-name weekend">SUN</div>
+        <div class="session weekend-session">
+          <div class="session-time weekend-time">🌿 Flexible timing</div>
+          <div class="session-task">Book your MS-900 exam (use exam discount voucher if available). Share your learning wins!</div>
+          <div class="session-resource">🏆 microsoft.com/certification</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="tip-box">💡 <span><strong>Week 4 Goal:</strong> Complete the MS-900 learning path, be able to run a full M365 domain setup from memory, and optionally book your MS-900 certification exam.</span></div>
+  </div>
+
+</div>
+
+<!-- ── Day Notes & Completion Modal ── -->
+<div class="modal-overlay" id="dayModal">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <div>
+        <div class="modal-day-label" id="modalDayLabel">Monday</div>
+        <div class="modal-week-label" id="modalWeekLabel">Week 1 — DNS Fundamentals</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section-title">// Sessions — click to mark complete</div>
+      <div id="modalSessions"></div>
+      <label class="modal-notes-label" for="modalNotesArea">// Your notes for this day</label>
+      <textarea class="modal-notes" id="modalNotesArea" placeholder="Add your notes, observations, questions, or anything you want to remember…"></textarea>
+      <div class="modal-save-row">
+        <button class="modal-btn secondary" onclick="closeModal()">Close</button>
+        <button class="modal-btn primary" onclick="saveModal()">Save Notes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ════════════════════════════════════════════
+     STORAGE HELPERS  (localStorage)
+  ════════════════════════════════════════════ */
+  const STORAGE_KEY = 'dns_m365_plan_v1';
+
+  function loadStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : { cards: {}, weeks: [false,false,false,false] };
+    } catch(e) { return { cards: {}, weeks: [false,false,false,false] }; }
+  }
+
+  function saveStorage() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+    } catch(e) { console.warn('Could not save to localStorage', e); }
+  }
+
+  /* ── Single source of truth ── */
+  const appState = loadStorage();
+  /* ensure arrays exist after old saves */
+  if (!appState.cards) appState.cards = {};
+  if (!appState.weeks) appState.weeks = [false,false,false,false];
+
+  /* ════════════════════════════════════════════
+     TAB SWITCHING
+  ════════════════════════════════════════════ */
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.week-panel');
+
+  function showWeek(index) {
+    tabs.forEach((t, i) => t.classList.toggle('active', i === index));
+    panels.forEach((p, i) => p.classList.toggle('active', i === index));
+  }
+
+  tabs.forEach((tab, i) => tab.addEventListener('click', () => showWeek(i)));
+
+  /* ════════════════════════════════════════════
+     WEEK MILESTONE TRACKER
+  ════════════════════════════════════════════ */
+  function toggleWeekDone(i) {
+    appState.weeks[i] = !appState.weeks[i];
+    document.getElementById('w' + i).classList.toggle('done', appState.weeks[i]);
+    saveStorage();
+  }
+
+  function restoreWeekMilestones() {
+    appState.weeks.forEach((done, i) => {
+      if (done) document.getElementById('w' + i).classList.add('done');
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     WEEK LABELS
+  ════════════════════════════════════════════ */
+  const weekLabels = [
+    'Week 1 — DNS Fundamentals',
+    'Week 2 — M365 Domain Setup',
+    'Week 3 — Email Security',
+    'Week 4 — Practice & Cert'
+  ];
+
+  let currentCardKey = null;
+
+  /* ════════════════════════════════════════════
+     INIT CARDS  — wire up clicks & restore state
+  ════════════════════════════════════════════ */
+  function initCards() {
+    document.querySelectorAll('.week-panel').forEach((panel, wIdx) => {
+      panel.querySelectorAll('.day-card').forEach((card, dIdx) => {
+        const key = `w${wIdx}_d${dIdx}`;
+        card.dataset.cardKey = key;
+        card.dataset.weekIdx = wIdx;
+
+        /* hint label */
+        const dayName = card.querySelector('.day-name');
+        if (dayName) {
+          const hint = document.createElement('span');
+          hint.className = 'day-card-hint';
+          hint.textContent = '✎ notes';
+          dayName.appendChild(hint);
+        }
+
+        card.addEventListener('click', () => openModal(card, wIdx, dIdx));
+
+        /* restore saved state onto card */
+        if (appState.cards[key]) refreshCardPreview(key);
+      });
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     MODAL  — open
+  ════════════════════════════════════════════ */
+  function openModal(card, wIdx, dIdx) {
+    const key = card.dataset.cardKey;
+    currentCardKey = key;
+
+    const dayNameEl = card.querySelector('.day-name');
+    const dayText = dayNameEl ? dayNameEl.childNodes[0].textContent.trim() : 'Day';
+    document.getElementById('modalDayLabel').textContent = dayText;
+    document.getElementById('modalWeekLabel').textContent = weekLabels[wIdx];
+
+    const sessionsContainer = document.getElementById('modalSessions');
+    sessionsContainer.innerHTML = '';
+
+    const state = appState.cards[key] || { sessions: [], note: '' };
+    const cardSessions = card.querySelectorAll('.session');
+
+    cardSessions.forEach((sess, sIdx) => {
+      const timeEl = sess.querySelector('.session-time');
+      const taskEl = sess.querySelector('.session-task');
+      const resEl  = sess.querySelector('.session-resource');
+
+      const timeClass = timeEl
+        ? (timeEl.classList.contains('morning') ? 'morning'
+          : timeEl.classList.contains('evening') ? 'evening' : 'weekend-time')
+        : 'weekend-time';
+
+      const sessClass = sess.classList.contains('morning') ? 'morning'
+                      : sess.classList.contains('evening') ? 'evening'
+                      : 'weekend-session';
+
+      const isDone = state.sessions[sIdx] || false;
+
+      const div = document.createElement('div');
+      div.className = `modal-session ${sessClass}${isDone ? ' checked' : ''}`;
+      div.innerHTML = `
+        <div class="modal-checkbox">${isDone ? '✓' : ''}</div>
+        <div class="modal-session-content">
+          <div class="modal-session-time ${timeClass}">${timeEl ? timeEl.textContent.trim() : ''}</div>
+          <div class="modal-session-task">${taskEl ? taskEl.innerHTML : ''}</div>
+          ${resEl ? `<div class="modal-session-resource">${resEl.textContent.trim()}</div>` : ''}
+        </div>`;
+
+      div.addEventListener('click', () => toggleSession(div, sIdx));
+      sessionsContainer.appendChild(div);
+    });
+
+    document.getElementById('modalNotesArea').value = state.note || '';
+    document.getElementById('dayModal').classList.add('open');
+  }
+
+  /* ════════════════════════════════════════════
+     MODAL  — toggle session complete
+  ════════════════════════════════════════════ */
+  function toggleSession(div, sIdx) {
+    const isDone = div.classList.toggle('checked');
+    div.querySelector('.modal-checkbox').textContent = isDone ? '✓' : '';
+
+    if (!appState.cards[currentCardKey])
+      appState.cards[currentCardKey] = { sessions: [], note: '' };
+    appState.cards[currentCardKey].sessions[sIdx] = isDone;
+
+    saveStorage();
+    refreshCardPreview(currentCardKey);
+  }
+
+  /* ════════════════════════════════════════════
+     MODAL  — save notes
+  ════════════════════════════════════════════ */
+  function saveModal() {
+    const note = document.getElementById('modalNotesArea').value.trim();
+    if (!appState.cards[currentCardKey])
+      appState.cards[currentCardKey] = { sessions: [], note: '' };
+    appState.cards[currentCardKey].note = note;
+
+    saveStorage();
+    refreshCardPreview(currentCardKey);
+    closeModal();
+  }
+
+  /* ════════════════════════════════════════════
+     MODAL  — close
+  ════════════════════════════════════════════ */
+  function closeModal() {
+    document.getElementById('dayModal').classList.remove('open');
+    currentCardKey = null;
+  }
+
+  document.getElementById('dayModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  /* ════════════════════════════════════════════
+     REFRESH CARD PREVIEW  (badges + note snippet)
+  ════════════════════════════════════════════ */
+  function refreshCardPreview(key) {
+    const card = document.querySelector(`[data-card-key="${key}"]`);
+    if (!card) return;
+    const state = appState.cards[key];
+    if (!state) return;
+
+    card.querySelectorAll('.session').forEach((sess, sIdx) => {
+      const done = state.sessions[sIdx] || false;
+      sess.classList.toggle('session-done', done);
+
+      let badge = sess.querySelector('.session-done-badge');
+      if (done && !badge) {
+        badge = document.createElement('span');
+        badge.className = 'session-done-badge';
+        badge.textContent = '✓ DONE';
+        sess.appendChild(badge);
+      } else if (!done && badge) {
+        badge.remove();
+      }
+    });
+
+    let preview = card.querySelector('.day-note-preview');
+    if (state.note) {
+      if (!preview) {
+        preview = document.createElement('div');
+        preview.className = 'day-note-preview';
+        card.appendChild(preview);
+      }
+      preview.textContent = '📝 ' + state.note;
+    } else if (preview) {
+      preview.remove();
+    }
+  }
+
+  /* ════════════════════════════════════════════
+     BOOT
+  ════════════════════════════════════════════ */
+  restoreWeekMilestones();
+  initCards();
+</script>
+</body>
+</html>
